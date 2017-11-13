@@ -12,12 +12,12 @@ def find_mtgo():
     mtgo_dir = os.path.join(os.getenv('LOCALAPPDATA'), 'Apps','2.0','Data')
     for _ in range(0, 2):
         mtgo_dir = os.path.join(mtgo_dir, os.listdir(mtgo_dir)[0])
-    versions = [folder for folder in os.listdir(mtgo_dir) if ('mtgo..tion' in folder)]
+    versions = [os.path.join(mtgo_dir, folder) for folder in os.listdir(mtgo_dir) if ('mtgo..tion' in folder)]
     if len(versions) > 1:
-        #TODO: Work out which is newer, and choose that one.
-        mtgo_dir = os.path.join(mtgo_dir, versions[1])
+        latest_version = max(versions, key=os.path.getmtime)
+        mtgo_dir = latest_version
     elif versions:
-        mtgo_dir = os.path.join(mtgo_dir, versions[0])
+        mtgo_dir = versions[0]
     else:
         print("Could not find MTGO data directory.")
         print("Please run MTGO at least once before using this tool.")
