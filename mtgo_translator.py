@@ -52,7 +52,7 @@ for fn in os.listdir('json'):
         base.append(fn)
 
 for fn in base:
-    ext = json.load(open('json' + os.sep + fn,'r'))
+    ext = json.load(open('json' + os.sep + fn, 'r', encoding='utf8'))
     for card in ext['cards']:
         name = card['name']
 
@@ -90,7 +90,7 @@ for fn in base:
 
 
 for fn in local:
-    ext = json.load(open('json' + os.sep + fn,'r'))
+    ext = json.load(open('json' + os.sep + fn, 'r', encoding='utf8'))
     for card in ext['cards']:
         mid = card['multiverseid']
 
@@ -120,7 +120,7 @@ ids_database = {}
 for fn in os.listdir(mtgo_dir):
     if not fn.startswith('client_'):
         continue
-    lines = open(mtgo_dir + os.sep + fn, 'r').read().split('\n')
+    lines = open(mtgo_dir + os.sep + fn, 'r', encoding='utf8').read().split('\n')
     i = 0
     while i < len(lines):
         if '<DigitalObject' in lines[i]:
