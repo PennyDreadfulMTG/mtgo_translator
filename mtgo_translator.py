@@ -3,18 +3,34 @@ import json
 import os
 import re
 
-# You have to edit this path
-mtgo_dir = '<PATH TO YOUR USER DIR>/Local Settings/Application Data/Apps/2.0/Data/<SOME SPECIFIC FOLDER FROM YOUR INSTALL>/Data/CardDataSource'
-
 # You can change the target language here
 TARGET = 'fr'
 TARGET_NAME = 'French'
+
+# find the MTGO path.
+def find_mtgo():
+    mtgo_dir = os.path.join(os.getenv('LOCALAPPDATA'), 'Apps','2.0','Data')
+    for _ in range(0, 2):
+        mtgo_dir = os.path.join(mtgo_dir, os.listdir(mtgo_dir)[0])
+    versions = [folder for folder in os.listdir(mtgo_dir) if ('mtgo..tion' in folder)]
+    if len(versions) > 1:
+        #TODO: Work out which is newer, and choose that one.
+        mtgo_dir = os.path.join(mtgo_dir, versions[1])
+    elif versions:
+        mtgo_dir = os.path.join(mtgo_dir, versions[0])
+    else:
+        print("Could not find MTGO data directory.")
+        print("Please run MTGO at least once before using this tool.")
+        exit
+    return os.path.join(mtgo_dir, 'Data','CardDataSource')
+
+mtgo_dir = find_mtgo()
 
 cardnames_fn_xml = 'CARDNAME_STRING.xml'
 oracles_fn_xml = 'REAL_ORACLETEXT_STRING.xml'
 flavors_fn_xml = 'FLAVORTEXT_STRING.xml'
 
-cardnames_xml = open(mtgo_dir + os.sep + cardnames_fn_xml,, 'rb').read()
+cardnames_xml = open(mtgo_dir + os.sep + cardnames_fn_xml, 'rb').read()
 oracles_xml = open(mtgo_dir + os.sep + oracles_fn_xml, 'rb').read()
 flavors_xml = open(mtgo_dir + os.sep + flavors_fn_xml, 'rb').read()
 
