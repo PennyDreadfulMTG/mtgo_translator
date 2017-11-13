@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import subprocess
 
 # You can change the target language here
 TARGET = 'fr'
@@ -21,10 +22,20 @@ def find_mtgo():
     else:
         print("Could not find MTGO data directory.")
         print("Please run MTGO at least once before using this tool.")
-        exit
+        exit()
     return os.path.join(mtgo_dir, 'Data','CardDataSource')
 
 mtgo_dir = find_mtgo()
+
+if not os.path.exists('mtgjson'):
+    try:
+        CREATE_NEW_CONSOLE = 0x00000010
+        subprocess.run(['git', 'clone', 'https://github.com/mtgjson/mtgjson.git', '--depth', '1'], creationflags=CREATE_NEW_CONSOLE)
+    except subprocess.CalledProcessError:
+        #TODO: Try doing zip download.
+        print("Unable to clone mtgjson.  Please install git, and make sure it's on your PATH.")
+        # print("Alternatively, download https://github.com/mtgjson/mtgjson/archive/master.zip, and unzip it as mtgjson")
+        exit()
 
 cardnames_fn_xml = 'CARDNAME_STRING.xml'
 oracles_fn_xml = 'REAL_ORACLETEXT_STRING.xml'
@@ -44,7 +55,7 @@ base = []
 
 cards = {}
 
-for fn in os.listdir('json'):
+for fn in os.listdir(os.path.join('mtgjson', 'json')):
     if not fn.endswith('.json'): continue
     if fn.endswith(TARGET + '.json'):
         local.append(fn)
@@ -52,7 +63,7 @@ for fn in os.listdir('json'):
         base.append(fn)
 
 for fn in base:
-    ext = json.load(open('json' + os.sep + fn, 'r', encoding='utf8'))
+    ext = json.load(open(os.path.join('mtgjson', 'json', fn), 'r', encoding='utf8'))
     for card in ext['cards']:
         name = card['name']
 
@@ -90,7 +101,7 @@ for fn in base:
 
 
 for fn in local:
-    ext = json.load(open('json' + os.sep + fn, 'r', encoding='utf8'))
+    ext = json.load(open(os.path.join('mtgjson', 'json', fn), 'r', encoding='utf8'))
     for card in ext['cards']:
         mid = card['multiverseid']
 
